@@ -7,11 +7,17 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
+
+import controllers.HuespedController;
+import models.Huesped;
+
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.awt.Font;
+import java.awt.HeadlessException;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.SystemColor;
@@ -19,6 +25,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.sql.Date;
 import java.text.Format;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
@@ -38,6 +45,7 @@ public class RegistroHuesped extends JFrame {
 	private JLabel labelExit;
 	private JLabel labelAtras;
 	int xMouse, yMouse;
+	private HuespedController huespedController;
 
 	/**
 	 * Launch the application.
@@ -46,7 +54,7 @@ public class RegistroHuesped extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RegistroHuesped frame = new RegistroHuesped();
+					RegistroHuesped frame = new RegistroHuesped("prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,7 +66,7 @@ public class RegistroHuesped extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public RegistroHuesped() {
+	public RegistroHuesped(String numeroReserva) {
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistroHuesped.class.getResource("/imagenes/lOGO-50PX.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,6 +78,7 @@ public class RegistroHuesped extends JFrame {
 		setLocationRelativeTo(null);
 		setUndecorated(true);
 		contentPane.setLayout(null);
+		this.huespedController = new HuespedController();
 		
 		JPanel header = new JPanel();
 		header.setBounds(0, 0, 910, 36);
@@ -210,6 +219,8 @@ public class RegistroHuesped extends JFrame {
 		txtNreserva.setColumns(10);
 		txtNreserva.setBackground(Color.WHITE);
 		txtNreserva.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+		txtNreserva.setText(numeroReserva);
+		txtNreserva.setEditable(false);
 		contentPane.add(txtNreserva);
 		
 		JSeparator separator_1_2 = new JSeparator();
@@ -253,6 +264,27 @@ public class RegistroHuesped extends JFrame {
 		btnguardar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
+				try {
+					if (txtNombre.getText() != null && txtApellido.getText() != null
+							&& txtFechaN.getDate() != null
+							&& txtNacionalidad.getSelectedItem() != null
+							&& txtTelefono.getSelectedTextColor() !=null
+							&& txtNreserva != null) {		
+						guardarHuesped();
+						
+						
+						Exito exito = new Exito();
+						exito.setVisible(true);
+						dispose();
+						
+					} else {
+						JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
+					}
+				} catch (HeadlessException e1) {
+				
+					JOptionPane.showMessageDialog(contentPane, "Error: " + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		btnguardar.setLayout(null);
@@ -313,6 +345,27 @@ public class RegistroHuesped extends JFrame {
 		labelExit.setHorizontalAlignment(SwingConstants.CENTER);
 		labelExit.setForeground(SystemColor.black);
 		labelExit.setFont(new Font("Roboto", Font.PLAIN, 18));
+	}
+	
+	public void guardarHuesped() {
+		try {
+			
+			String nombreHuesped = txtNombre.getText();
+			String apellidoHuesped = txtApellido.getText();
+			Date fechaN = Date.valueOf(((JTextField)txtFechaN.getDateEditor().getUiComponent()).getText());
+			String nacionalidadHuesped = (String) txtNacionalidad.getSelectedItem();
+			String telefonoHuesped = txtTelefono.getText();
+			Integer numeroReserva = Integer.valueOf(txtNreserva.getText());
+			
+			huespedController.guardar(new Huesped(nombreHuesped, apellidoHuesped, fechaN, nacionalidadHuesped, telefonoHuesped, numeroReserva));
+			
+			
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(contentPane, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		
 	}
 	
 	

@@ -1,9 +1,14 @@
 package views;
 
 import java.awt.EventQueue;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import controllers.UsuarioController;
+import models.Usuario;
+
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -17,6 +22,7 @@ import javax.swing.SwingConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import utils.Decrypter;
 
 public class Login extends JFrame {
 
@@ -29,6 +35,7 @@ public class Login extends JFrame {
 	private JPasswordField txtContrasena;
 	int xMouse, yMouse;
 	private JLabel labelExit;
+	private UsuarioController usuarioController;
 
 	/**
 	 * Launch the application.
@@ -59,6 +66,8 @@ public class Login extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		setLocationRelativeTo(null);
+		
+		this.usuarioController = new UsuarioController();
 		
 		
 		JPanel panel = new JPanel();
@@ -235,12 +244,13 @@ public class Login extends JFrame {
 	}
 	
 	private void Login() {
-		 String Usuario= "admin";
-	     String Contraseña="admin";
-
-	        String contrase=new String (txtContrasena.getPassword());
-
-	        if(txtUsuario.getText().equals(Usuario) && contrase.equals(Contraseña)){
+		
+		
+		 String usuarioIngresado = txtUsuario.getText();
+		 String passwordIngresado = String.valueOf(txtContrasena.getPassword());
+		 Usuario usuario= usuarioController.obtenerUsuario(usuarioIngresado, passwordIngresado);
+	
+	        if(usuarioIngresado.equals(usuario.getNombreUsuario()) && passwordIngresado.equals(Decrypter.simpleJeringosoDecrypt(usuario.getPassword()))){
 	            MenuUsuario menu = new MenuUsuario();
 	            menu.setVisible(true);
 	            dispose();	 

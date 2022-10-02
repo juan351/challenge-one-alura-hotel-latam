@@ -1,1 +1,10 @@
+/.classpath
+/.project
+/controllers/
+/dao/
+/factory/
+/imagenes/
+/models/
 /views/
+/utils/
+/tests/
